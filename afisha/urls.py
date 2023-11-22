@@ -5,7 +5,7 @@ from movie_app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/v1/directors/', views.get_directors_with_movies),
+    path('api/v1/directors/', views.get_directors),
     path('api/v1/directors/<int:directors_id>/', views.get_directors_by_id),
     path('api/v1/movies/', views.get_movies),
     path('api/v1/movies/<int:movies_id>/', views.get_movies_by_id),
