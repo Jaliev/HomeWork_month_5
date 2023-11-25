@@ -35,7 +35,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class Movies_with_ReviewSerializer(serializers.ModelSerializer):
     movie_name = serializers.SerializerMethodField(read_only=True)
-    # rating = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Review
         fields = ('movie_name', 'text', 'stars')
@@ -45,17 +44,8 @@ class Movies_with_ReviewSerializer(serializers.ModelSerializer):
             return obj.movie.title
         return None
 
-    # def get_rating(self, obj):
-    #     rating = []
-    #     average_score = sum(movie_app.models.Review.stars) / len(movie_app.models.Review.stars)
-    #     for i in average_score:
-    #         rating.append(i)
-    #         return rating
-
-
 class Directors_with_MoviesSerializer(serializers.ModelSerializer):
     director_name = serializers.SerializerMethodField(read_only=True)
-    # movies_count = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Movie
         fields = ('director_name', 'title')
@@ -65,5 +55,46 @@ class Directors_with_MoviesSerializer(serializers.ModelSerializer):
             return obj.director.name
         return None
 
-    # def get_movies_count(self, obj):
-    #     return obj.title.count()
+class DirectorsValidateSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+
+    def validate_name(self, value):
+        if len(value) > 100:
+            raise serializers.ValidationError('Длина имени должна быть не более 100 символов')
+
+class MoviesValidateSerilizer(serializers.Serializer):
+    title = serializers.CharField(max_length=100)
+    description = serializers.CharField(max_length=500)
+    duration = serializers.CharField(max_length=50)
+    director_id = serializers.IntegerField()
+
+    def validate_title(self, value):
+        if len(value) > 100:
+            raise serializers.ValidationError('Длина заголовка должна быть не более 100 символов')
+
+    def validate_director_id(self, value):
+        try:
+            Director.objects.get(id=value)
+        except Director.DoesNotExist:
+            raise serializers.ValidationError(f'Режиссёр с id {value} не найден!')
+        return value
+
+    def validate_description(self, value):
+        if len(value) > 500:
+            raise serializers.ValidationError('Длина описания должна быть не более 500 символов')
+
+class ReviewValidateSerializer(serializers.Serializer):
+    text = serializers.CharField(max_length=1500)
+    movie_id = serializers.IntegerField()
+    stars = serializers.CharField(max_length=5)
+
+    def validate_movie_id(self, value):
+        try:
+            Movie.objects.get(id=value)
+        except Movie.DoesNotExist:
+            raise serializers.ValidationError(f'Фильм с id {value} не найден!')
+        return value
+
+    def validate_text(self, value):
+        if len(value) > 1500:
+            raise serializers.ValidationError('Длина отзыва должна быть не больше 1500 символов')

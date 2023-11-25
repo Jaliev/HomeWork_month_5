@@ -9,7 +9,10 @@ from movie_app.serializer import (
     ReviewListSerializer,
     ReviewSerializer,
     Movies_with_ReviewSerializer,
-    Directors_with_MoviesSerializer
+    Directors_with_MoviesSerializer,
+    DirectorsValidateSerializer,
+    MoviesValidateSerilizer,
+    ReviewValidateSerializer
 )
 
 @api_view(['GET', 'POST'])
@@ -18,7 +21,20 @@ def get_directors(request):
         director = Director.objects.all()
         serializer = DirectorsListSerializer(director, many=True)
         return Response(serializer.data)
+
     elif request.method == 'POST':
+        serializer = DirectorsValidateSerializer(data=request.data)
+        # вариант №1
+        # if not serializer.is_valid():
+        #     return Response(
+        #         data={
+        #             "message": "Error!",
+        #             "data": serializer.errors
+        #         },
+        #         status=400
+        #     )
+        # вариант №2
+        serializer.is_valid(raise_exception=True)
         name = request.data['name']
         director = Director.objects.create(name=name)
         return Response(
@@ -39,6 +55,8 @@ def get_directors_by_id(request, directors_id):
         serializer = DirectorSerializer(director)
         return Response(serializer.data)
     elif request.method == 'PUT':
+        serializer = DirectorsValidateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         director.name = request.data['name']
         director.save()
         return Response(
@@ -61,6 +79,8 @@ def get_movies(request):
         serializer = MoviesListSerializer(movies, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
+        serializer = MoviesValidateSerilizer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         title = request.data['title']
         description = request.data['description']
         duration = request.data['duration']
@@ -89,7 +109,8 @@ def get_movies_by_id(request, movies_id):
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
     elif request.method == 'PUT':
-# Когда делаю ['title', movie.title] выводит KEY ERROR, без него он работает, поэтому не стал его добавлять...
+        serializer = MoviesValidateSerilizer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         movie.title = request.data['title']
         movie.description = request.data['description']
         movie.duration = request.data['duration']
@@ -115,6 +136,8 @@ def get_reviews(request):
         serializer = ReviewListSerializer(reviews, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
+        serializer = ReviewValidateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         text = request.data['text'],
         movie_id = request.data['movie_id']
         review = Review.objects.create(
@@ -138,6 +161,8 @@ def get_reviews_by_id(request, reviews_id):
         serializer = ReviewSerializer(review)
         return Response(serializer.data)
     elif request.method == 'PUT':
+        serializer = ReviewValidateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         review.text = request.data['text'],
         review.movie_id = request.data['movie_id']
         review.save()
