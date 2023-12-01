@@ -1,4 +1,5 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from movie_app.models import Director, Movie, Review
 from movie_app.serializer import (
@@ -16,6 +17,7 @@ from movie_app.serializer import (
 )
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def get_directors(request):
     if request.method == 'GET':
         director = Director.objects.all()
@@ -45,6 +47,7 @@ def get_directors(request):
         )
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def get_directors_by_id(request, directors_id):
     try:
         director = Director.objects.get(id=directors_id)
@@ -73,6 +76,7 @@ def get_directors_by_id(request, directors_id):
         )
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def get_movies(request):
     if request.method == 'GET':
         movies = Movie.objects.all()
@@ -99,6 +103,7 @@ def get_movies(request):
         )
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def get_movies_by_id(request, movies_id):
     try:
         movie = Movie.objects.get(id=movies_id)
@@ -130,6 +135,7 @@ def get_movies_by_id(request, movies_id):
         )
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def get_reviews(request):
     if request.method == 'GET':
         reviews = Review.objects.all()
@@ -151,6 +157,7 @@ def get_reviews(request):
             status=201
         )
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def get_reviews_by_id(request, reviews_id):
     try:
         review = Review.objects.get(id=reviews_id)
@@ -180,12 +187,14 @@ def get_reviews_by_id(request, reviews_id):
         )
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_movies_with_reviews(request):
     reviews = Review.objects.all()
     serializer = Movies_with_ReviewSerializer(reviews, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_directors_with_movies(request):
     movie = Movie.objects.all()
     serializer = Directors_with_MoviesSerializer(movie, many=True)
