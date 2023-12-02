@@ -14,10 +14,10 @@ class DirectorSerializer(serializers.ModelSerializer):
 class MoviesListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('id', 'title')
+        fields = ('id', 'title', 'description', 'duration', 'director')
 
 class MovieSerializer(serializers.ModelSerializer):
-    director = DirectorSerializer(many=False)
+    director = DirectorSerializer(many=False, read_only=True)
     class Meta:
         model = Movie
         fields = ('id', 'title', 'description', 'duration', 'director')
@@ -25,10 +25,10 @@ class MovieSerializer(serializers.ModelSerializer):
 class ReviewListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ('id', 'text')
+        fields = ('id', 'text', 'movie', 'stars')
 
 class ReviewSerializer(serializers.ModelSerializer):
-    movie = MovieSerializer(many=False)
+    movie = MovieSerializer(many=False, read_only=True)
     class Meta:
         model = Review
         fields = ('id', 'text', 'movie', 'stars')
